@@ -454,14 +454,6 @@ html.modo-aire body {
   color: var(--verde);
 }
 
-.tg-paga {
-  font: 700 15px/1 var(--texto);
-  color: var(--rojo);
-  border: 1px solid rgba(255, 107, 94, 0.5);
-  border-radius: 999px;
-  padding: 6px 12px;
-}
-
 .tg-num {
   text-align: center;
   font: 700 44px/1 var(--titulos);

@@ -8,8 +8,6 @@ export default function VistaTabla({ d }: { d: Datos }) {
   const deUltima = ult != null ? new Map(tabla(d, ult).map((f) => [f.participante.id, f.pts])) : null;
   const torneo = d.partidos[0]?.torneo ?? 'Liga BetPlay';
   const fase = d.partidos[0]?.fase ?? 'Cuadrangulares';
-  const peorPos = Math.max(...filas.map((f) => f.pos));
-  const hayPenitencia = ult != null && filas.length > 1 && peorPos > 1;
 
   return (
     <div className="vista entrar">
@@ -39,7 +37,6 @@ export default function VistaTabla({ d }: { d: Datos }) {
                   +{deUltima.get(f.participante.id) ?? 0} en la {nombreFecha(d, ult!).toLowerCase()}
                 </span>
               )}
-              {hayPenitencia && f.pos === peorPos && <span className="tg-paga">Paga la ronda 🍺</span>}
             </span>
             <span className="tg-num">{f.plenos}</span>
             <span className="tg-num">{f.aciertos}</span>

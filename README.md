@@ -26,7 +26,7 @@ El diseño deja libre la esquina de abajo a la derecha, que es donde va la cáma
 - **Pleno:** marcador exacto, vale **3 puntos**.
 - **Acierto:** ganador o empate, vale **1 punto**.
 - Un partido con `multiplicador = 2` vale doble. Está pensado para la final.
-- La tabla ordena por puntos, después por plenos y después por aciertos. Al último le sale *Paga la ronda 🍺*.
+- La tabla ordena por puntos, después por plenos y después por aciertos.
 
 ## Primer uso
 
