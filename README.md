@@ -51,7 +51,7 @@ Después de eso, la página vuelve a pedir crear un PIN.
 `vercel.json` hace dos cosas:
 
 - Manda `/master` a la app.
-- Programa un cron diario a `/api/despertar`. Así Supabase, que en el plan gratis pausa los proyectos con una semana sin uso, no se duerme antes del stream.
+- Programa dos llamadas diarias a `/api/despertar` (cron). Así Supabase, que en el plan gratis pausa los proyectos con poca actividad en una semana, no se duerme antes del stream.
 
 ## OBS
 
