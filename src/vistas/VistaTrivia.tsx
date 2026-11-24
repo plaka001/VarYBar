@@ -225,7 +225,7 @@ function Trivia({ fila }: { fila: FilaTrivia }) {
             <li>
               <b>1</b>
               <span>
-                Síguenos en <strong>Instagram, TikTok y Kick</strong>: los QR están a la izquierda.
+                Síguenos en <strong>Instagram, TikTok, YouTube y Kick</strong>: los QR están a la izquierda.
               </span>
             </li>
             <li>

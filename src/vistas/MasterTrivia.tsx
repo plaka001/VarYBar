@@ -276,7 +276,7 @@ export default function MasterTrivia({
               </div>
               <p className="m-suave">
                 Tenía {puntosTxt(e.ganador.p)} ({pctTxt(e.ganador.pct)} de opciones). Revisen que siga a VAR y BAR en Instagram,
-                TikTok y Kick, y que sea el mismo nick del chat.
+                TikTok, YouTube y Kick, y que sea el mismo nick del chat.
               </p>
               <div className="m-botones">
                 <button

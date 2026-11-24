@@ -26,7 +26,7 @@ El diseño deja libre la esquina de abajo a la derecha, que es donde va la cáma
 Sale en la misma fuente de OBS que la polla: en **Al aire** del máster se toca **Trivia y ruleta** y la pantalla cambia sola. No hay que tocar OBS. Para que se oigan los sonidos (punto, tic-tac y pitazo), la fuente debe tener marcado **Controlar audio a través de OBS**.
 
 1. En el máster, pestaña **Trivia y ruleta**: en *Premio, preguntas y reiniciar* se escriben el premio, el partido y cuántas preguntas (de 1 a 20).
-2. En pantalla salen las reglas y los QR de Instagram, TikTok y Kick.
+2. En pantalla salen las reglas y los QR de Instagram, TikTok, YouTube y Kick.
 3. Hacen cada pregunta en vivo. El primero que responde bien en el chat se anota: se escribe su nick y **+1 punto** (o se toca su nombre si ya tiene puntos). La pregunta avanza sola. Si nadie acierta: **Nadie acertó · siguiente**. Si se equivocan: **Deshacer** o **−1**.
 4. Al terminar las preguntas: **Ir a la ruleta** (salen las oportunidades de cada uno) y **¡Girar!** Cada punto es una oportunidad: el que tiene 3 puntos tiene el triple de chance que el que tiene 1.
 5. El máster no ve el ganador hasta que la ruleta frena en el stream. Se revisa que siga las redes; si no, **No sigue las redes** lo saca y la ruleta vuelve a girar.

@@ -12,5 +12,6 @@ export const SUPABASE_KEY: string =
 export const REDES = [
   { nombre: 'Instagram', url: 'https://instagram.com/varybarpodcast', muestra: '@varybarpodcast' },
   { nombre: 'TikTok', url: 'https://www.tiktok.com/@varybarpodcast', muestra: '@varybarpodcast' },
+  { nombre: 'YouTube', url: 'https://www.youtube.com/@varybarpodcast', muestra: '@varybarpodcast' },
   { nombre: 'Kick', url: 'https://kick.com/varybarpodcast', muestra: 'kick.com/varybarpodcast' },
 ];
