@@ -221,6 +221,16 @@ export default function MasterTrivia({
                 Empezar
               </button>
             )}
+            <button
+              className="m-boton"
+              disabled={ocupado || !rk.length}
+              title={rk.length ? undefined : 'Primero alguien tiene que tener puntos'}
+              onClick={() => {
+                if (window.confirm(`¿Cortar las preguntas (van ${e.hist.length} de ${e.total}) y pasar a la ruleta?`)) void hacer(aRuleta);
+              }}
+            >
+              Ir a la ruleta ya
+            </button>
           </div>
         </div>
       )}
