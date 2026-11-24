@@ -407,9 +407,11 @@ function dibujar(c: HTMLCanvasElement, pz: Porcion[], resaltado: string | null) 
     const z = resaltado ? pz.find((x) => x.k === resaltado) : undefined;
     if (z) {
       g.beginPath();
-      g.moveTo(0, 0);
-      g.arc(0, 0, R, z.a0, z.a1);
-      g.closePath();
+      if (pz.length > 1) {
+        g.moveTo(0, 0);
+        g.arc(0, 0, R, z.a0, z.a1);
+        g.closePath();
+      } else g.arc(0, 0, R - 6, 0, TAU);   // una sola tajada: solo el borde
       g.lineWidth = 12;
       g.strokeStyle = '#7CFFA6';
       g.shadowColor = '#7CFFA6';
