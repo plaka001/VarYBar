@@ -9,6 +9,28 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Si después de un despliegue quedó en caché una versión vieja y la página no arranca (pasa en OBS),
+      // se recarga sola pidiendo la versión nueva. Máximo una vez por minuto, hasta que arranque.
+      (function vigilar(espera) {
+        setTimeout(function () {
+          var r = document.getElementById('root');
+          if (!r || r.children.length) return;
+          var antes = 0;
+          try {
+            antes = Number(sessionStorage.getItem('vyb_recarga')) || 0;
+          } catch (e) {}
+          var falta = 60000 - (Date.now() - antes);
+          if (falta > 0) return vigilar(falta);
+          try {
+            sessionStorage.setItem('vyb_recarga', String(Date.now()));
+          } catch (e) {}
+          var u = new URL(location.href);
+          u.searchParams.set('v', String(Date.now()));
+          location.replace(u.toString());
+        }, espera);
+      })(6000);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
