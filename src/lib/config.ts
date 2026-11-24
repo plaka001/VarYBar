@@ -7,3 +7,10 @@ export const SUPABASE_URL: string =
 
 export const SUPABASE_KEY: string =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_TxyFzuGWmt4Jk4GqbGGAEw_OmH35SDT';
+
+// Redes que salen con QR en la trivia (hay que seguirlas para reclamar el premio).
+export const REDES = [
+  { nombre: 'Instagram', url: 'https://instagram.com/varybarpodcast', muestra: '@varybarpodcast' },
+  { nombre: 'TikTok', url: 'https://www.tiktok.com/@varybarpodcast', muestra: '@varybarpodcast' },
+  { nombre: 'Kick', url: 'https://kick.com/varybarpodcast', muestra: 'kick.com/varybarpodcast' },
+];

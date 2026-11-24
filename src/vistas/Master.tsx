@@ -4,6 +4,7 @@ import { useDatos, type EstadoConexion } from '../lib/datos';
 import { aInputLocal, cuando, desdeInputLocal, rangoDias } from '../lib/formato';
 import { calificar } from '../lib/puntos';
 import { llamar, MENSAJES } from '../lib/supabase';
+import MasterTrivia from './MasterTrivia';
 import {
   clave,
   fechasDisponibles,
@@ -16,6 +17,14 @@ import {
 } from '../lib/tipos';
 
 const LLAVE_PIN = 'polla_pin';
+const LLAVE_PESTANA = 'polla_pestana';
+const leerPestana = (): 'polla' | 'trivia' => {
+  try {
+    return localStorage.getItem(LLAVE_PESTANA) === 'trivia' ? 'trivia' : 'polla';
+  } catch {
+    return 'polla';
+  }
+};
 const leerPin = () => {
   try {
     return localStorage.getItem(LLAVE_PIN) ?? '';
@@ -181,10 +190,20 @@ function Panel({
 }) {
   const { datos, estado, recargar, cambiarLocal } = useDatos();
   const [fecha, setFecha] = useState<number | null>(null);
+  const [pestana, setPestana] = useState<'polla' | 'trivia'>(leerPestana);
 
   useEffect(() => {
     if (datos && fecha == null) setFecha(datos.alAire.fecha);
   }, [datos, fecha]);
+
+  function elegirPestana(p: 'polla' | 'trivia') {
+    setPestana(p);
+    try {
+      localStorage.setItem(LLAVE_PESTANA, p);
+    } catch {
+      /* sin almacenamiento */
+    }
+  }
 
   const guardar: Guardar = async (fn, args) => {
     try {
@@ -217,28 +236,54 @@ function Panel({
       <BarraMaster estado={estado} onSalir={() => onSalir()} />
       <ControlAlAire d={datos} guardar={guardar} cambiarLocal={cambiarLocal} onElegirFecha={setFecha} />
 
-      <section className="m-seccion">
-        <p className="m-ayuda">Anotar pronósticos y resultados</p>
-        <div className="m-tabs" role="tablist" aria-label="Fecha para anotar">
-          {fechas.map((f) => (
-            <button
-              key={f}
-              role="tab"
-              aria-selected={f === fecha}
-              className={f === fecha ? 'activo' : ''}
-              onClick={() => setFecha(f)}
-            >
-              {nombreFecha(datos, f)}
-            </button>
-          ))}
-        </div>
-        <h2 className="m-titulo-fecha">
-          {nombreFecha(datos, fecha)} <span>{rangoDias(partidos.map((p) => p.inicio))}</span>
-        </h2>
-        {partidos.map((m) => (
-          <TarjetaPartido key={m.id} m={m} d={datos} guardar={guardar} cambiarLocal={cambiarLocal} />
+      <div className="m-pestanas" role="tablist" aria-label="Sección">
+        {(['polla', 'trivia'] as const).map((p) => (
+          <button
+            key={p}
+            role="tab"
+            aria-selected={pestana === p}
+            className={pestana === p ? 'activo' : ''}
+            onClick={() => elegirPestana(p)}
+          >
+            {p === 'polla' ? 'La polla' : 'Trivia y ruleta'}
+          </button>
         ))}
-      </section>
+      </div>
+
+      {pestana === 'trivia' ? (
+        <MasterTrivia
+          pin={pin}
+          onSalir={onSalir}
+          enAire={datos.alAire.vista === 'trivia'}
+          ponerAlAire={async () => {
+            cambiarLocal((x) => ({ ...x, alAire: { ...x.alAire, vista: 'trivia' } }));
+            return guardar('poner_al_aire', { p_vista: 'trivia', p_fecha: datos.alAire.fecha });
+          }}
+        />
+      ) : (
+        <section className="m-seccion">
+          <p className="m-ayuda">Anotar pronósticos y resultados</p>
+          <div className="m-tabs" role="tablist" aria-label="Fecha para anotar">
+            {fechas.map((f) => (
+              <button
+                key={f}
+                role="tab"
+                aria-selected={f === fecha}
+                className={f === fecha ? 'activo' : ''}
+                onClick={() => setFecha(f)}
+              >
+                {nombreFecha(datos, f)}
+              </button>
+            ))}
+          </div>
+          <h2 className="m-titulo-fecha">
+            {nombreFecha(datos, fecha)} <span>{rangoDias(partidos.map((p) => p.inicio))}</span>
+          </h2>
+          {partidos.map((m) => (
+            <TarjetaPartido key={m.id} m={m} d={datos} guardar={guardar} cambiarLocal={cambiarLocal} />
+          ))}
+        </section>
+      )}
 
       <CambiarPin pin={pin} onPinNuevo={onPinNuevo} />
     </main>
@@ -298,7 +343,7 @@ function ControlAlAire({
       <div className="m-aire-cab">
         <span className="m-aire-ahora">
           <i className="punto-vivo" /> Al aire:{' '}
-          <b>{vista === 'tabla' ? 'Tabla general' : `${nombreFecha(d, fecha)} · partidos`}</b>
+          <b>{vista === 'tabla' ? 'Tabla general' : vista === 'trivia' ? 'Trivia y ruleta' : `${nombreFecha(d, fecha)} · partidos`}</b>
         </span>
         <a className="m-link" href="/" target="_blank" rel="noreferrer">
           Abrir vista al aire ↗
@@ -319,6 +364,12 @@ function ControlAlAire({
           onClick={() => void poner('tabla', fecha)}
         >
           Tabla general
+        </button>
+        <button
+          className={`m-boton trivia ${vista === 'trivia' ? 'activo' : ''}`}
+          onClick={() => void poner('trivia', fecha)}
+        >
+          Trivia y ruleta
         </button>
       </div>
       <p className="m-ayuda">Toca un botón y la pantalla del stream cambia sola.</p>

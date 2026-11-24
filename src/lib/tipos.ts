@@ -29,7 +29,7 @@ export type Pronostico = {
   actualizado?: string;
 };
 
-export type Vista = 'fecha' | 'tabla';
+export type Vista = 'fecha' | 'tabla' | 'trivia';
 
 export type AlAire = {
   vista: Vista;

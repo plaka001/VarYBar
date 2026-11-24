@@ -14,7 +14,8 @@ export type Respuesta =
   | 'pin_corto'
   | 'ya_existe'
   | 'no_existe'
-  | 'invalido';
+  | 'invalido'
+  | 'conflicto';
 
 export const MENSAJES: Record<string, string> = {
   sin_pin: 'Todavía no hay PIN creado',
@@ -24,6 +25,7 @@ export const MENSAJES: Record<string, string> = {
   ya_existe: 'Ya hay un PIN creado',
   no_existe: 'Ese partido o participante no existe',
   invalido: 'Dato inválido',
+  conflicto: 'Otro máster cambió la trivia al mismo tiempo. Ya se actualizó: revisen y repitan si hace falta.',
 };
 
 export async function llamar(funcion: string, args: Record<string, unknown> = {}): Promise<Respuesta> {

@@ -3,6 +3,7 @@ import { useDatos } from '../lib/datos';
 import type { Vista } from '../lib/tipos';
 import VistaFecha from './VistaFecha';
 import VistaTabla from './VistaTabla';
+import VistaTrivia from './VistaTrivia';
 
 const ANCHO = 1920;
 const ALTO = 1080;
@@ -34,9 +35,9 @@ export default function AlAire() {
     document.documentElement.classList.add('modo-aire');
   }, []);
 
-  // Por defecto manda el máster (tabla al_aire); con ?vista=tabla o ?fecha=2 se puede fijar.
+  // Por defecto manda el máster (tabla al_aire); con ?vista=tabla, ?vista=trivia o ?fecha=2 se puede fijar.
   const vista: Vista =
-    vistaFija === 'tabla' || vistaFija === 'fecha' ? vistaFija : (datos?.alAire.vista ?? 'fecha');
+    vistaFija === 'tabla' || vistaFija === 'fecha' || vistaFija === 'trivia' ? vistaFija : (datos?.alAire.vista ?? 'fecha');
   const fecha = fechaFija > 0 ? fechaFija : (datos?.alAire.fecha ?? 1);
 
   return (
@@ -45,7 +46,9 @@ export default function AlAire() {
       style={{ transform: `translate(${escala.x}px, ${escala.y}px) scale(${escala.s})` }}
     >
       <div className="fondo" />
-      {!datos ? (
+      {vista === 'trivia' ? (
+        <VistaTrivia key="trivia" />
+      ) : !datos ? (
         <div className="aire-cargando">{estado === 'error' ? 'Conectando con la polla…' : 'Cargando la polla…'}</div>
       ) : vista === 'tabla' ? (
         <VistaTabla key="tabla" d={datos} />

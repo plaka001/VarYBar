@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { sb } from './supabase';
 import type { AlAire, Datos, Participante, Partido, Pronostico } from './tipos';
+import { normalizar, type EstadoTrivia } from './trivia';
 
 export type EstadoConexion = 'cargando' | 'en-vivo' | 'respaldo' | 'error';
 
@@ -103,4 +104,83 @@ export function useDatos() {
   }, []);
 
   return { datos, estado, recargar, cambiarLocal };
+}
+
+// ---------------------------------------------------------------- trivia (una sola fila)
+export type FilaTrivia = { estado: EstadoTrivia; version: number; actualizado: string };
+
+const aFila = (r: { estado?: unknown; version?: number; actualizado?: string } | null): FilaTrivia => ({
+  estado: normalizar(r?.estado),
+  version: r?.version ?? 0,
+  actualizado: r?.actualizado ?? new Date(0).toISOString(),
+});
+
+async function traerTrivia(): Promise<FilaTrivia> {
+  const { data, error } = await sb.from('trivia').select('estado, version, actualizado').eq('id', 1).maybeSingle();
+  if (error) throw error;
+  return aFila(data);
+}
+
+/**
+ * La trivia en vivo: llega por tiempo real (con la fila completa, sin volver a preguntar)
+ * y de respaldo se pregunta cada 3 s si el tiempo real no conecta (o cada minuto si sí).
+ * Nunca se devuelve a una versión más vieja de la que ya tiene.
+ */
+export function useTrivia() {
+  const [fila, setFila] = useState<FilaTrivia | null>(null);
+  const [estado, setEstado] = useState<EstadoConexion>('cargando');
+  const vivo = useRef(false);
+  const ultimo = useRef(0);
+
+  const aceptar = useCallback((f: FilaTrivia) => {
+    setFila((prev) => (!prev || f.version >= prev.version ? f : prev));
+  }, []);
+
+  const recargar = useCallback(async () => {
+    try {
+      const f = await traerTrivia();
+      ultimo.current = Date.now();
+      aceptar(f);
+      setEstado(vivo.current ? 'en-vivo' : 'respaldo');
+    } catch (e) {
+      console.warn('[trivia] no pude leer la trivia', e);
+      setEstado('error');
+    }
+  }, [aceptar]);
+
+  useEffect(() => {
+    void recargar();
+    const canal = sb
+      .channel(`trivia-cambios-${Math.random().toString(36).slice(2, 8)}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'trivia' }, (p) => {
+        const nueva = p.new as { estado?: unknown; version?: number; actualizado?: string } | undefined;
+        if (nueva && typeof nueva.version === 'number') {
+          ultimo.current = Date.now();
+          aceptar(aFila(nueva));
+        } else void recargar();
+      })
+      .subscribe((status) => {
+        const antes = vivo.current;
+        vivo.current = status === 'SUBSCRIBED';
+        if (vivo.current && !antes) void recargar();
+        if (!vivo.current) setEstado((e) => (e === 'en-vivo' ? 'respaldo' : e));
+      });
+    const reloj = window.setInterval(() => {
+      const cada = vivo.current ? 60_000 : 3_000;
+      if (Date.now() - ultimo.current >= cada - 250) void recargar();
+    }, 1_000);
+    const alVolver = () => {
+      if (document.visibilityState === 'visible') void recargar();
+    };
+    document.addEventListener('visibilitychange', alVolver);
+    window.addEventListener('online', alVolver);
+    return () => {
+      window.clearInterval(reloj);
+      document.removeEventListener('visibilitychange', alVolver);
+      window.removeEventListener('online', alVolver);
+      void sb.removeChannel(canal);
+    };
+  }, [recargar, aceptar]);
+
+  return { fila, estado, recargar, aceptar };
 }
